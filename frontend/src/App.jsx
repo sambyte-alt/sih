@@ -1,27 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
-import Navbar from './components/Navbar';
-import UploadPage from './pages/UploadPage';
-import OverviewPage from './pages/OverviewPage';
-import RankingPage from './pages/RankingPage';
-import DrilldownPage from './pages/DrilldownPage';
-import NegativeSpacePage from './pages/NegativeSpacePage';
+import React, { useState } from 'react';
+import Header from './components/Header';
+import KpiGrid from './components/KpiGridcard';
+import GapTable from './components/Executiontable';
+import ExplainabilityPanel from './components/ExplainabilityPanel';
+import { kpiMetrics, initialGaps, shapData, telemetryData } from './data/mockData';
 
 export default function App() {
-  const [batchId, setBatchId] = useState(null);
-  
+  const [gaps] = useState(initialGaps);
+  const [selectedGap, setSelectedGap] = useState(initialGaps[0]);
+
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-slate-900">
-        <Navbar batchId={batchId} />
-        <Routes>
-          <Route path="/" element={<UploadPage onBatchReady={setBatchId} />} />
-          <Route path="/overview" element={batchId ? <OverviewPage batchId={batchId} /> : <Navigate to="/" />} />
-          <Route path="/ranking" element={batchId ? <RankingPage batchId={batchId} /> : <Navigate to="/" />} />
-          <Route path="/entity/:cseId" element={batchId ? <DrilldownPage batchId={batchId} /> : <Navigate to="/" />} />
-          <Route path="/negative-space" element={batchId ? <NegativeSpacePage batchId={batchId} /> : <Navigate to="/" />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+      <Header />
+      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
+        <KpiGrid metrics={kpiMetrics} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GapTable gaps={gaps} selectedGap={selectedGap} onSelectGap={setSelectedGap} />
+          <ExplainabilityPanel selectedGap={selectedGap} shapData={shapData} telemetryData={telemetryData} />
+        </div>
+      </main>
+    </div>
   );
 }
